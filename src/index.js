@@ -6,8 +6,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 let jugador = {
-    nombre:'',
-    apellido: '',
+    posicio: '',
+    alies: '',
+    nom:'',
+    cognom: '',
     score:''
    };
 
@@ -16,6 +18,28 @@ let respuesta = {
     codigo: 200,
     mensaje: ''
 };
+
+let jugadores = [{
+    posicio: "1",
+    alies: "jperez",
+    nom: "Jose",
+    congnom: "Perez",
+    score: "1000"
+},
+{
+    posicio: "2",
+    alies: "jsanz",
+    nom: "Juan",
+    congnom: "Sanz",
+    score: "950"
+},
+{
+    posicio: "3",
+    alies: "mgutierrez",
+    nom: "Maria",
+    congnom: "Gutierrez",
+    score: "850"
+}];
 
 app.get('/', function (req, res) {
     respuesta = {
@@ -30,7 +54,15 @@ app.get('/hola', function (req, res) {
     res.send('[GET]Saludos desde express');
 });
 
-app.post('/gamer', function (req, res) {
+app.get('/jugador/:alies', function (req, res) {
+    var playerFound = jugadores.find(function (cualJugador) { 
+        return cualJugador.alies === req.params.alies; 
+    }); 
+    console.log(playerFound);
+    res.send('[GET]Saludos desde express');
+});
+
+app.post('/jugador', function (req, res) {
     if (req.body.nombre == null || req.body.apellido == null || req.body.score == null) {
         respuesta = {
             error: true,
