@@ -38,11 +38,11 @@ app.post('/gamer', function (req, res) {
             mensaje: 'Los campos nombre, apellido y score son obligatorios' 
         };
     }
-    else if (Object.keys(req.body).every(i => req.body[i] == jugador[i])) {
+    else if (req.body.nombre !== '' || req.body.apellido !== '' || req.body.score !== '') {
         respuesta = {
             error: true,
             codigo: 503,
-            mensaje: 'Este jugador ya ha sido creado' 
+            mensaje: 'El jugador ya ha sido creado' 
         };
     }
     else {
