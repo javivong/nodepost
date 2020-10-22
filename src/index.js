@@ -19,7 +19,7 @@ let respuesta = {
     mensaje: ''
 };
 
-let jugadores = [{
+let jugadors = [{
     posicio: "1",
     alies: "jperez",
     nom: "Jose",
@@ -51,11 +51,15 @@ app.get('/', function (req, res) {
 });
 
 app.get('/ranking', function (req, res) {
-    res.send(jugadores); // Los jugadores ya están ordenados.
+    var ranking = {
+        nombreJugadors: jugadors.length,
+        jugadors: jugadors
+    };
+    res.send(ranking); // Los jugadores ya están ordenados.
 });
 
 app.get('/jugador/:alies', function (req, res) {
-    jugador = jugadores.find(function (quinJugador) { 
+    jugador = jugadors.find(function (quinJugador) { 
         return quinJugador.alies === req.params.alies; 
     }); 
     if (jugador == null) {
@@ -71,14 +75,14 @@ app.get('/jugador/:alies', function (req, res) {
 });
 
 app.post('/jugador/:alies', function (req, res) {
-    if (req.body.some(camp => camp == null)) {
+    if (Object.values(req.body).some(camp => camp == null)) {
         respuesta = {
             error: true,
             codigo: 502,
             mensaje: 'Els camps alies, nom, cognom i score son requerits' 
         };
     }
-    else if (jugadores.some(camp => camp.alies === req.params.alies)) {
+    else if (jugadors.some(camp => camp.alies === req.params.alies)) {
         respuesta = {
             error: true,
             codigo: 503,
@@ -87,7 +91,7 @@ app.post('/jugador/:alies', function (req, res) {
     }
     else {
         jugador = req.body;
-        jugadores.push(jugador);
+        jugadors.push(jugador);
         respuesta = {
             error: false,
             codigo: 200,
@@ -100,12 +104,43 @@ app.post('/jugador/:alies', function (req, res) {
 });
 
 app.put('/jugador/:alies', function (req, res) {
-
+    if (Object.values(req.body).some(camp => camp == null)) {
+        respuesta = {
+            error: true,
+            codigo: 502,
+            mensaje: 'Els camps alies, nom, cognom i score son requerits' 
+        };
+    }
+    else if (req.body.score < 0) {
+        respuesta = {
+            error: true,
+            codigo: 502,
+            mensaje: 'Score no pot tenir un valor negatiu' 
+        };
+    }
+    else if (!jugadors.some(camp => camp.alies === req.params.alies)) {
+        respuesta = {
+            error: true,
+            codigo: 503,
+            mensaje: 'El jugador no existeix' 
+        };
+    }
+    else {
+        jugador = req.body;
+        respuesta = {
+            error: false,
+            codigo: 200,
+            mensaje: 'Jugador modificat',
+            respuesta: jugador 
+        };
+        OrdenaRanking();
+    };
+    res.send(respuesta);
 });
 
 function OrdenaRanking() {
-    jugadores.sort((a, b) => a.score - b.score);
-    jugadores.forEach(cadaJugador, indexJugador => cadaJugador.posicio = indexJugador + 1);
+    jugadors.sort((a, b) => b.score - a.score);
+    jugadors.forEach((cadaJugador, indexJugador) => cadaJugador.posicio = indexJugador + 1);
 };
 
 app.listen(3000, () => {
