@@ -50,39 +50,53 @@ app.get('/', function (req, res) {
     res.send(respuesta);
 });
 
-app.get('/hola', function (req, res) {
-    res.send('[GET]Saludos desde express');
+app.get('/ranking', function (req, res) {
+    jugadores = jugadores.sort(function (a, b) {
+        if (a.posicio > b.posicio) { return 1;}
+        if (a.posicio < b.posicio) { return -1;}
+        return 0;
+    });
+    res.send(jugadores); 
 });
 
 app.get('/jugador/:alies', function (req, res) {
-    var playerFound = jugadores.find(function (cualJugador) { 
-        return cualJugador.alies === req.params.alies; 
+    jugador = jugadores.find(function (quinJugador) { 
+        return quinJugador.alies === req.params.alies; 
     }); 
-    console.log(playerFound);
-    res.send('[GET]Saludos desde express');
+    if (jugador == null) {
+        respuesta = {
+            error: true,
+            codi: 504,
+            missatge: "El jugador no existeix"
+        };
+        res.send(respuesta);
+    } else {
+        res.send(jugador);
+    };
 });
 
-app.post('/jugador', function (req, res) {
-    if (req.body.nombre == null || req.body.apellido == null || req.body.score == null) {
+app.post('/jugador/:alies', function (req, res) {
+    if (req.body.some(camp => camp == null)) {  //req.body.nom == null || req.body.cognom == null || req.body.score == null) {
         respuesta = {
             error: true,
             codigo: 502,
-            mensaje: 'Los campos nombre, apellido y score son obligatorios' 
+            mensaje: 'Els camps alies, nom, cognom i score son requerits' 
         };
     }
-    else if (req.body.nombre !== '' || req.body.apellido !== '' || req.body.score !== '') {
+    else if (jugadores.some(camp => camp.alies === req.params.alies)) {
         respuesta = {
             error: true,
             codigo: 503,
-            mensaje: 'El jugador ya ha sido creado' 
+            mensaje: 'El jugador ja ha sigut creat' 
         };
     }
     else {
         jugador = req.body;
+        jugadores.push(jugador);s
         respuesta = {
             error: false,
             codigo: 200,
-            mensaje: 'Jugador creado',
+            mensaje: 'Jugador creat',
             respuesta: jugador 
         };
     };
