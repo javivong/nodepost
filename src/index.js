@@ -51,12 +51,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/ranking', function (req, res) {
-    jugadores = jugadores.sort(function (a, b) {
-        if (a.posicio > b.posicio) { return 1;}
-        if (a.posicio < b.posicio) { return -1;}
-        return 0;
-    });
-    res.send(jugadores); 
+    res.send(jugadores); // Los jugadores ya están ordenados.
 });
 
 app.get('/jugador/:alies', function (req, res) {
@@ -76,7 +71,7 @@ app.get('/jugador/:alies', function (req, res) {
 });
 
 app.post('/jugador/:alies', function (req, res) {
-    if (req.body.some(camp => camp == null)) {  //req.body.nom == null || req.body.cognom == null || req.body.score == null) {
+    if (req.body.some(camp => camp == null)) {
         respuesta = {
             error: true,
             codigo: 502,
@@ -92,16 +87,26 @@ app.post('/jugador/:alies', function (req, res) {
     }
     else {
         jugador = req.body;
-        jugadores.push(jugador);s
+        jugadores.push(jugador);
         respuesta = {
             error: false,
             codigo: 200,
             mensaje: 'Jugador creat',
             respuesta: jugador 
         };
+        OrdenaRanking();
     };
     res.send(respuesta);
-})
+});
+
+app.put('/jugador/:alies', function (req, res) {
+
+});
+
+function OrdenaRanking() {
+    jugadores.sort((a, b) => a.score - b.score);
+    jugadores.forEach(cadaJugador, indexJugador => cadaJugador.posicio = indexJugador + 1);
+};
 
 app.listen(3000, () => {
  console.log("El servidor está inicializado en el puerto 3000");
