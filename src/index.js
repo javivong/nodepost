@@ -11,7 +11,7 @@ let jugador = {
     nom:'',
     cognom: '',
     score:''
-   };
+};
 
 let respuesta = {
     error: false,
@@ -59,9 +59,7 @@ app.get('/ranking', function (req, res) {
 });
 
 app.get('/jugador/:alies', function (req, res) {
-    jugador = jugadors.find(function (quinJugador) { 
-        return quinJugador.alies === req.params.alies; 
-    }); 
+    jugador = jugadors.find(quinJugador => quinJugador.alies === req.params.alies); 
     if (jugador == null) {
         respuesta = {
             error: true,
@@ -81,15 +79,13 @@ app.post('/jugador/:alies', function (req, res) {
             codigo: 502,
             mensaje: 'Els camps alies, nom, cognom i score son requerits' 
         };
-    }
-    else if (jugadors.some(camp => camp.alies === req.params.alies)) {
+    } else if (jugadors.some(camp => camp.alies === req.params.alies)) {
         respuesta = {
             error: true,
             codigo: 503,
             mensaje: 'El jugador ja ha sigut creat' 
         };
-    }
-    else {
+    } else {
         jugador = req.body;
         jugadors.push(jugador);
         respuesta = {
@@ -110,6 +106,7 @@ app.put('/jugador/:alies', function (req, res) {
             codigo: 502,
             mensaje: 'Els camps alies, nom, cognom i score son requerits' 
         };
+        res.send(respuesta);
     }
     else if (req.body.score < 0) {
         respuesta = {
@@ -117,25 +114,21 @@ app.put('/jugador/:alies', function (req, res) {
             codigo: 502,
             mensaje: 'Score no pot tenir un valor negatiu' 
         };
-    }
-    else if (!jugadors.some(camp => camp.alies === req.params.alies)) {
-        respuesta = {
-            error: true,
-            codigo: 503,
-            mensaje: 'El jugador no existeix' 
-        };
+        res.send(respuesta);
     }
     else {
-        jugador = req.body;
-        respuesta = {
-            error: false,
-            codigo: 200,
-            mensaje: 'Jugador modificat',
-            respuesta: jugador 
+        var indexJugador = jugadors.findIndex(camp => camp.alies === req.params.alies);
+        if (indexJugador == -1) {
+            respuesta = {
+                error: true,
+                codigo: 503,
+                mensaje: 'El jugador no existeix' 
+            };
+        } else {
+            jugadores[indexJugador] = req.body;
+            OrdenaRanking();
         };
-        OrdenaRanking();
-    };
-    res.send(respuesta);
+    }
 });
 
 function OrdenaRanking() {
@@ -143,6 +136,4 @@ function OrdenaRanking() {
     jugadors.forEach((cadaJugador, indexJugador) => cadaJugador.posicio = indexJugador + 1);
 };
 
-app.listen(3000, () => {
- console.log("El servidor está inicializado en el puerto 3000");
-});
+app.listen(3000, () => { console.log("El servidor está inicializado en el puerto 3000"); });
