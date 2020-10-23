@@ -107,16 +107,14 @@ app.put('/jugador/:alies', function (req, res) {
             mensaje: 'Els camps alies, nom, cognom i score son requerits' 
         };
         res.send(respuesta);
-    }
-    else if (req.body.score < 0) {
+    } else if (req.body.score < 0) {
         respuesta = {
             error: true,
             codigo: 502,
             mensaje: 'Score no pot tenir un valor negatiu' 
         };
         res.send(respuesta);
-    }
-    else {
+    } else {
         var indexJugador = jugadors.findIndex(camp => camp.alies === req.params.alies);
         if (indexJugador == -1) {
             respuesta = {
