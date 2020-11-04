@@ -1,137 +1,133 @@
 const express = require("express");
-const bodyParser = require('body-parser');
-const app = express();
+const bodyParser = require("body-parser");
+const app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-let jugador = {
-    posicio: '',
-    alies: '',
-    nom:'',
-    cognom: '',
-    score:''
-};
+let code100 = { code: 100, error: false, message: '2-DAMVI Server Up' };
+let code200 = { code: 200, error: false, message: 'Player Exists' };
+let code201 = { code: 201, error: false, message: 'Player Correctly Created' };
+let code202 = { code: 201, error: false, message: 'Player Correctly Updated' };
+let codeError502 = { code: 503, error: true, message: 'The field: name, surname, score are mandatories (the score value has to be >0)' };
+let codeError503 = { code: 503, error: true, message: 'Error: Player Exists' };
+let codeError504 = { code: 504, error: true, message: 'Error: Player not found' };
 
-let respuesta = {
-    error: false,
-    codigo: 200,
-    mensaje: ''
-};
+var players = [
+    { position: "1", alias: "jperez", name: "Jose", surname: "Perez", score: 1000, created: "2020-11-03T15:20:21.377Z"},
+    { position: "2", alias: "jsanz", name: "Juan", surname: "Sanz", score: 950, created: "2020-11-03T15:20:21.377Z" },
+    { position: "3", alias: "mgutierrez", name: "Maria", surname: "Gutierrez", score: 850, created: "2020-11-03T15:20:21.377Z" }
+];
 
-let jugadors = [{
-    posicio: "1",
-    alies: "jperez",
-    nom: "Jose",
-    congnom: "Perez",
-    score: "1000"
-},
-{
-    posicio: "2",
-    alies: "jsanz",
-    nom: "Juan",
-    congnom: "Sanz",
-    score: "950"
-},
-{
-    posicio: "3",
-    alies: "mgutierrez",
-    nom: "Maria",
-    congnom: "Gutierrez",
-    score: "850"
-}];
+function UpdateRanking() {
+    //Order the ranking
+    players.sort((a, b) => (a.score <= b.score) ? 1 : -1);
+
+    //Position Update
+    for (x = 0; x < players.length; x++) {
+        players[x].position = x + 1;
+    }
+};
 
 app.get('/', function (req, res) {
-    respuesta = {
-        error: true,
-        codigo: 200,
-        mensaje: 'Punto de inicio'
-       };
-    res.send(respuesta);
+    //code funciona ok
+    res.send(code100);
 });
 
 app.get('/ranking', function (req, res) {
-    var ranking = {
-        nombreJugadors: jugadors.length,
-        jugadors: jugadors
-    };
-    res.send(ranking); // Los jugadores ya están ordenados.
+    let ranking = { namebreplayers: players.length, players: players };
+    res.send(ranking);
 });
 
-app.get('/jugador/:alies', function (req, res) {
-    jugador = jugadors.find(quinJugador => quinJugador.alies === req.params.alies); 
-    if (jugador == null) {
-        respuesta = {
-            error: true,
-            codi: 504,
-            missatge: "El jugador no existeix"
-        };
-        res.send(respuesta);
-    } else {
-        res.send(jugador);
-    };
-});
+app.get('/players/:alias', function (req, res) {
+    //Player Search
+    var index = players.findIndex(j => j.alias === req.params.alias);
 
-app.post('/jugador/:alies', function (req, res) {
-    if (Object.values(req.body).some(camp => camp == null)) {
-        respuesta = {
-            error: true,
-            codigo: 502,
-            mensaje: 'Els camps alies, nom, cognom i score son requerits' 
-        };
-    } else if (jugadors.some(camp => camp.alies === req.params.alies)) {
-        respuesta = {
-            error: true,
-            codigo: 503,
-            mensaje: 'El jugador ja ha sigut creat' 
-        };
+    if (index >= 0) {
+        //Player exists
+        response = code200;
+        response.jugador = players[index];
     } else {
-        jugador = req.body;
-        jugadors.push(jugador);
-        respuesta = {
-            error: false,
-            codigo: 200,
-            mensaje: 'Jugador creat',
-            respuesta: jugador 
-        };
-        OrdenaRanking();
-    };
-    res.send(respuesta);
-});
-
-app.put('/jugador/:alies', function (req, res) {
-    if (Object.values(req.body).some(camp => camp == null)) {
-        respuesta = {
-            error: true,
-            codigo: 502,
-            mensaje: 'Els camps alies, nom, cognom i score son requerits' 
-        };
-        res.send(respuesta);
-    } else if (req.body.score < 0) {
-        respuesta = {
-            error: true,
-            codigo: 502,
-            mensaje: 'Score no pot tenir un valor negatiu' 
-        };
-        res.send(respuesta);
-    } else {
-        var indexJugador = jugadors.findIndex(camp => camp.alies === req.params.alies);
-        if (indexJugador == -1) {
-            respuesta = {
-                error: true,
-                codigo: 503,
-                mensaje: 'El jugador no existeix' 
-            };
-        } else {
-            jugadores[indexJugador] = req.body;
-            OrdenaRanking();
-        };
+        //Player doesn't exists
+        response = codeError504;
     }
+    res.send(response);
 });
 
-function OrdenaRanking() {
-    jugadors.sort((a, b) => b.score - a.score);
-    jugadors.forEach((cadaJugador, indexJugador) => cadaJugador.posicio = indexJugador + 1);
-};
+app.post('/players/:alias', function (req, res) {
+    var paramAlias = req.params.alias || '';
+    var paramName = req.body.name || '';
+    var paramSurname = req.body.surname || '';
+    var paramScore = req.body.score || '';
 
-app.listen(3000, () => { console.log("El servidor está inicializado en el puerto 3000"); });
+    if (paramAlias === '' || paramName === '' || paramSurname === '' || parseInt(paramScore) <= 0 || paramScore === '') {
+        response = codeError502;
+    } else {
+        //Player Search
+        var index = players.findIndex(j => j.alias === paramAlias)
+
+        if (index != -1) {
+            //Player allready exists
+            response = codeError503;
+        } else {
+            //Add Player
+            players.push({ 
+                position: '', 
+                alias: paramAlias, 
+                name: paramName, 
+                surname: paramSurname, 
+                score: paramScore ,
+                created: new Date()
+            });
+            //Sort the ranking
+            UpdateRanking();
+            //Search Player Again
+            index = players.findIndex(j => j.alias === paramAlias);
+            //Response return
+            response = code201;
+            response.player = players[index];
+        }
+    }
+    res.send(response);
+});
+
+app.put('/players/:alias', function (req, res) {
+    var paramalias = req.params.alias || '';
+    var paramname = req.body.name || '';
+    var paramsurname = req.body.surname || '';
+    var paramScore = req.body.score || '';
+
+    if (paramalias === '' || paramname === '' || paramsurname === '' || parseInt(paramScore) <= 0 || paramScore === '') {
+        response = codeError502; //Paràmetres incomplerts
+    } else {
+        //Player Search
+        var index = players.findIndex(j => j.alias === paramalias)
+
+        if (index != -1) {
+            //Update Player
+            players[index] = { 
+                position: '', 
+                alias: paramalias, 
+                name: paramname, 
+                surname: paramsurname, 
+                score: paramScore,
+                created:  players[index].created,
+                updated: new Date()
+            };
+            //Sort the ranking
+            UpdateRanking();
+            //Search Player Again
+            index = players.findIndex(j => j.alias === paramalias);
+            //Response return
+            response = code202;
+            response.jugador = players[index];
+        } else {
+            response = codeError504;
+        }
+    }
+    res.send(response);
+});
+
+app.listen(3000, () => {
+    console.log("El servidor está inicializado en el puerto 3000");
+});
