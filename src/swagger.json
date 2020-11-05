@@ -2,23 +2,19 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "Swagger API for Player DB",
-    "description": "Swagger API for Player DB",
-    "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
-    }
+    "title": "Swagger API for Players DB",
+    "description": "Swagger API for Players DB"
   },
   "host": "localhost:3000",
   "basePath": "/api/v1",
   "tags": [
     {
       "name": "Players",
-      "description": "API for players in the system"
+      "description": "Players in the system"
     }
   ],
   "schemes": [
-    "http"
+    "https"
   ],
   "consumes": [
     "application/json"
@@ -27,91 +23,47 @@
     "application/json"
   ],
   "paths": {
-    "/users": {
-      "post": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Create new user in system",
-        "parameters": [
-          {
-            "name": "user",
-            "in": "body",
-            "description": "User that we want to create",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "New user is created",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Get all users in system",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Users"
-            }
-          }
-        }
+    "/" : {
+      "get" : {
+
       }
     },
-    "/users/{userId}": {
+    "/ranking": {
+      "get": {
+        "tags": [
+          "Players"
+        ],
+        "description": "Get the number and the ranking of the players by score."
+      }
+    },
+    "/players/{alias}": {
       "parameters": [
         {
-          "name": "userId",
+          "name": "alias",
           "in": "path",
           "required": true,
-          "description": "ID of user that we want to find",
+          "description": "Alias of the player that we want to accés",
           "type": "string"
         }
       ],
       "get": {
         "tags": [
-          "Users"
+          "Players"
         ],
-        "summary": "Get user with given ID",
+        "summary": "Get player by alias",
         "responses": {
           "200": {
-            "description": "User is found",
+            "description": "Player is found",
             "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete user with given ID",
-        "tags": [
-          "Users"
-        ],
-        "responses": {
-          "200": {
-            "description": "User is deleted",
-            "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/Response"
             }
           }
         }
       },
       "put": {
-        "summary": "Update user with give ID",
+        "summary": "Update player by alias",
         "tags": [
-          "Users"
+          "Players"
         ],
         "parameters": [
           {
@@ -119,7 +71,7 @@
             "in": "body",
             "description": "User with new values of properties",
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/Player"
             }
           }
         ],
@@ -127,7 +79,31 @@
           "200": {
             "description": "User is updated",
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/Player"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create player",
+        "tags": [
+          "Players"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "User with new values of properties",
+            "schema": {
+              "$ref": "#/definitions/Player"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User is updated",
+            "schema": {
+              "$ref": "#/definitions/Player"
             }
           }
         }
@@ -135,31 +111,65 @@
     }
   },
   "definitions": {
-    "User": {
+    "Player": {
       "required": [
-        "email",
-        "_id"
+        "alias",
+        "name",
+        "surname",
+        "score"
       ],
       "properties": {
-        "_id": {
-          "type": "string",
-          "uniqueItems": true
-        },
-        "email": {
-          "type": "string",
-          "uniqueItems": true
-        },
-        "lastName": {
+        "position": {
           "type": "string"
         },
-        "firstName": {
+        "alias": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "name": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "score": {
           "type": "string"
         }
       }
     },
-    "Users": {
+    "Players": {
       "type": "array",
-      "$ref": "#/definitions/User"
+      "$ref": "#/definitions/Player"
+    },
+    "Code": {
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "error": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "Response": {
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "error": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        },
+        "player":{
+          "type":"object",
+          "$ref": "#/definitions/Player"
+        }
+      }
     }
   }
 }
