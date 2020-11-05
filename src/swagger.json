@@ -134,6 +134,9 @@
         },
         "score": {
           "type": "string"
+        },
+        "created": {
+          "type": "string"
         }
       }
     },
@@ -167,7 +170,8 @@
         },
         "player":{
           "type":"object",
-          "$ref": "#/definitions/Player"
+          "$ref": "#/definitions/Player",
+          "additionalProperties": {"type": "string"}
         }
       }
     }
