@@ -1,5 +1,6 @@
-# VSCode folder
+# Some IDEs config folders
 .vscode/
+.idea/
 
 #
 package-lock.json
