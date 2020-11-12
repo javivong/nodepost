@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const api = require("./api");
 const app = express()
-api.setup(app);
+api.set(app);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

@@ -1,4 +1,4 @@
-apiFunc = function (app) {
+api = function (app) {
     let code100 = {code: 100, error: false, message: '2-DAMVI Server Up'};
     let code200 = {code: 200, error: false, message: 'Player Exists'};
     let code201 = {code: 201, error: false, message: 'Player Correctly Created'};
@@ -141,4 +141,4 @@ apiFunc = function (app) {
     });
 }
 
-module.exports = {set: apiFunc};
+module.exports = {set: api};
