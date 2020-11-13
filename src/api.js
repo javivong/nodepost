@@ -20,7 +20,13 @@ api = function (app) {
             score: 1000,
             created: "2020-11-03T15:20:21.377Z"
         },
-        {position: "2", alias: "jsanz", name: "Juan", surname: "Sanz", score: 950, created: "2020-11-03T15:20:21.377Z"},
+        {
+            position: "2",
+            alias: "jsanz",
+            name: "Juan",
+            surname: "Sanz",
+            score: 950,
+            created: "2020-11-03T15:20:21.377Z"},
         {
             position: "3",
             alias: "mgutierrez",
