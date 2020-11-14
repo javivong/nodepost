@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "{protocol}://localhost:{port}/{basePath}",
+      "url": "{protocol}://0.0.0.0:{port}/{basePath}",
       "description": "Testing local server",
       "variables": {
         "protocol": {
@@ -19,9 +19,10 @@
         },
         "port": {
           "enum": [
-            "3000"
+            "3000",
+            "80"
           ],
-          "default": "3000"
+          "default": "80"
         },
         "basePath": {
           "enum": [

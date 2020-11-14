@@ -16,5 +16,5 @@ api.set(router);
 
 
 app.listen(PORT, () => {
-    console.log("El servidor está inicializado en el puerto 3000");
+    console.log("El servidor está inicializado en el puerto ${PORT}");
 });
