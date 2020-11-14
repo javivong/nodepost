@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "{protocol}limitless-oasis-95018.herokuapp.com:{port}/{basePath}",
+      "url": "{protocol}://limitless-oasis-95018.herokuapp.com/{basePath}",
       "description": "Testing local server",
       "variables": {
         "protocol": {
