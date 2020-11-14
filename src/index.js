@@ -2,7 +2,7 @@ const express = require("express"),
       bodyParser = require("body-parser"),
       api = require("./api"),
       swaggerUi = require('swagger-ui-express'),
-      swaggerDocument = require('./swagger.json'),
+      swaggerDocument = require('./openapi.json'),
       app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));

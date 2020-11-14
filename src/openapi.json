@@ -7,9 +7,16 @@
   },
   "servers": [
     {
-      "url": "localhost:{port}/{basePath}",
+      "url": "{protocol}://localhost:{port}/{basePath}",
       "description": "Testing local server",
       "variables": {
+        "protocol": {
+          "enum": [
+            "http",
+            "https"
+          ],
+          "default": "https"
+        },
         "port": {
           "enum": [
             "3000",
@@ -58,13 +65,14 @@
       }
     },
     "/players/{alias}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/alias"
+        }
+      ],
       "get": {
         "description": "Get the player by the alias",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/alias"
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Player exist",
@@ -72,6 +80,122 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/codePlayer"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Error: Player not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description":"Create a player",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/requestbody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Player correctly created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/code"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "player": {
+                          "type": "object",
+                          "$ref": "#/components/schemas/player"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The field: name, surname, score are mandatories (the score value has to be >0)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error: Player exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description":"",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/requestbody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Player correctly updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/code"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "player": {
+                          "type": "object",
+                          "$ref": "#/components/schemas/playerUpdated"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The field: name, surname, score are mandatories (the score value has to be >0)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
                 }
               }
             }
@@ -86,10 +210,10 @@
               }
             }
           }
-
         }
       }
-    }
+
+        }
   },
   "components": {
     "parameters": {
@@ -146,8 +270,7 @@
         "type": "object",
         "properties": {
           "position": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           },
           "alias": {
             "type": "string"
@@ -187,13 +310,6 @@
       "requestbody": {
         "type": "object",
         "properties": {
-          "position": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "alias": {
-            "type": "string"
-          },
           "name": {
             "type": "string"
           },
@@ -201,14 +317,14 @@
             "type": "string"
           },
           "score": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "created": {
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           }
-        }
+        },
+        "required": [
+          "name",
+          "surname",
+          "score"
+        ]
       }
     },
     "responses": {
@@ -237,43 +353,6 @@
                   }
                 }
               }
-            }
-          }
-        }
-      },
-      "codePlayer": {
-        "description": "Successful player creation/update",
-        "content": {
-          "application/json": {
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/code"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "player": {
-                      "type": "object",
-                      "oneOf": [
-                        {
-                          "$ref": "#/components/schemas/player"
-                        },
-                        {
-                          "$ref": "#/components/schemas/playerUpdated"
-                        }
-                      ],
-                      "discriminator": {
-                        "propertyName": "code",
-                        "mapping": {
-                          "201": "#/components/schemas/player",
-                          "202": "#/components/schemas/playerUpdated"
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
             }
           }
         }
