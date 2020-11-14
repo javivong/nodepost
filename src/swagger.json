@@ -1,179 +1,283 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.0",
   "info": {
-    "version": "1.0.0",
     "title": "Swagger API for Players DB",
-    "description": "Swagger API for Players DB"
+    "description": "REST Api documentation for the Node.js server",
+    "version": "1.0.1"
   },
-  "host": "localhost:3000",
-  "basePath": "/api/v1",
-  "tags": [
+  "servers": [
     {
-      "name": "Players",
-      "description": "Players in the system"
+      "url": "localhost:{port}/{basePath}",
+      "description": "Testing local server",
+      "variables": {
+        "port": {
+          "enum": [
+            "3000",
+            "5000"
+          ],
+          "default": "3000"
+        },
+        "basePath": {
+          "enum": [
+            "",
+            "v1",
+            "v2"
+          ],
+          "default": ""
+        }
+      }
     }
   ],
-  "schemes": [
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
   "paths": {
-    "/" : {
-      "get" : {
-
+    "/": {
+      "get": {
+        "description": "Root page, show if the server is up",
+        "parameters": [],
+        "responses": {
+          "100": {
+            "description": "2-DAMVI Server is Up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/ranking": {
       "get": {
-        "tags": [
-          "Players"
-        ],
-        "description": "Get the number and the ranking of the players by score."
+        "parameters": [],
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/ranking"
+          }
+        }
       }
     },
     "/players/{alias}": {
-      "parameters": [
-        {
-          "name": "alias",
-          "in": "path",
-          "required": true,
-          "description": "Alias of the player that we want to accés",
-          "type": "string"
-        }
-      ],
       "get": {
-        "tags": [
-          "Players"
-        ],
-        "summary": "Get player by alias",
-        "responses": {
-          "200": {
-            "description": "Player is found",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update player by alias",
-        "tags": [
-          "Players"
-        ],
+        "description": "Get the player by the alias",
         "parameters": [
           {
-            "name": "user",
-            "in": "body",
-            "description": "User with new values of properties",
-            "schema": {
-              "$ref": "#/definitions/Player"
-            }
+            "$ref": "#/components/parameters/alias"
           }
         ],
         "responses": {
           "200": {
-            "description": "User is updated",
-            "schema": {
-              "$ref": "#/definitions/Player"
+            "description": "Player exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/codePlayer"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Player not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
             }
           }
-        }
-      },
-      "post": {
-        "summary": "Create player",
-        "tags": [
-          "Players"
-        ],
-        "parameters": [
-          {
-            "name": "user",
-            "in": "body",
-            "description": "User with new values of properties",
-            "schema": {
-              "$ref": "#/definitions/Player"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User is updated",
-            "schema": {
-              "$ref": "#/definitions/Player"
-            }
-          }
+
         }
       }
     }
   },
-  "definitions": {
-    "Player": {
-      "required": [
-        "alias",
-        "name",
-        "surname",
-        "score"
-      ],
-      "properties": {
-        "position": {
-          "type": "string"
-        },
-        "alias": {
-          "type": "string",
-          "uniqueItems": true
-        },
-        "name": {
-          "type": "string"
-        },
-        "surname": {
-          "type": "string"
-        },
-        "score": {
-          "type": "string"
-        },
-        "created": {
+  "components": {
+    "parameters": {
+      "alias": {
+        "name":"alias",
+        "in": "path",
+        "required": true,
+        "description": "Alias of the player that we want to acces",
+        "schema": {
           "type": "string"
         }
       }
     },
-    "Players": {
-      "type": "array",
-      "$ref": "#/definitions/Player"
-    },
-    "Code": {
-      "properties": {
-        "code": {
-          "type": "integer"
-        },
-        "error": {
-          "type": "boolean"
-        },
-        "message": {
-          "type": "string"
+    "schemas": {
+      "code": {
+        "type":"object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "error": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "codePlayer": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/code"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "player": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/player"
+                  },
+                  {
+                    "$ref": "#/components/schemas/playerUpdated"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "player": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "playerUpdated": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/player"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "updated": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "requestbody": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
-    "Response": {
-      "properties": {
-        "code": {
-          "type": "integer"
-        },
-        "error": {
-          "type": "boolean"
-        },
-        "message": {
-          "type": "string"
-        },
-        "player":{
-          "type":"object",
-          "$ref": "#/definitions/Player",
-          "additionalProperties": {"type": "string"}
+    "responses": {
+      "ranking": {
+        "description": "Get the number of players and ranking order by score",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "numberplayers": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "players": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/player"
+                      },
+                      {
+                        "$ref": "#/components/schemas/playerUpdated"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "codePlayer": {
+        "description": "Successful player creation/update",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/code"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "player": {
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/player"
+                        },
+                        {
+                          "$ref": "#/components/schemas/playerUpdated"
+                        }
+                      ],
+                      "discriminator": {
+                        "propertyName": "code",
+                        "mapping": {
+                          "201": "#/components/schemas/player",
+                          "202": "#/components/schemas/playerUpdated"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
         }
       }
-    }
+      }
   }
 }
