@@ -20,17 +20,14 @@
         "port": {
           "enum": [
             "3000",
-            "5000"
           ],
           "default": "3000"
         },
         "basePath": {
           "enum": [
-            "",
-            "v1",
-            "v2"
+            "api/v1"
           ],
-          "default": ""
+          "default": "api/v1"
         }
       }
     }
