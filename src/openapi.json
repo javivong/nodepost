@@ -1,16 +1,159 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Title",
-    "description": "Title",
-    "version": "1.0.0"
+    "title": "Swagger API for Players DB",
+    "description": "REST Api documentation for the Node.js server",
+    "version": "1.0.1"
   },
   "servers": [
     {
-      "url": "https"
+      "url": "localhost:{port}/{basePath}",
+      "description": "Testing local server",
+      "variables": {
+        "port": {
+          "enum": [
+            "3000",
+            "5000"
+          ],
+          "default": "3000"
+        },
+        "basePath": {
+          "enum": [
+            "v1",
+            "v2"
+          ],
+          "default": "v1"
+        }
+      }
     }
   ],
   "paths": {
-    
+    "/": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ranking": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/players/{alias}": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "code": {
+        "type":"object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "error": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "player": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "playerUpdated": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/player",
+            "type": "object",
+            "properties": {
+              "updated": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ],
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "responses": {
+      "name": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+            }
+          }
+        }
+      }
+    }
   }
 }
