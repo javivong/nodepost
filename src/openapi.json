@@ -1,0 +1,283 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Swagger API for Players DB",
+    "description": "REST Api documentation for the Node.js server",
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "localhost:{port}/{basePath}",
+      "description": "Testing local server",
+      "variables": {
+        "port": {
+          "enum": [
+            "3000",
+            "5000"
+          ],
+          "default": "3000"
+        },
+        "basePath": {
+          "enum": [
+            "",
+            "v1",
+            "v2"
+          ],
+          "default": ""
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Root page, show if the server is up",
+        "parameters": [],
+        "responses": {
+          "100": {
+            "description": "2-DAMVI Server is Up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ranking": {
+      "get": {
+        "parameters": [],
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/ranking"
+          }
+        }
+      }
+    },
+    "/players/{alias}": {
+      "get": {
+        "description": "Get the player by the alias",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/alias"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Player exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/codePlayer"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Player not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
+            }
+          }
+
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "alias": {
+        "name":"alias",
+        "in": "path",
+        "required": true,
+        "description": "Alias of the player that we want to acces",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "code": {
+        "type":"object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "error": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "codePlayer": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/code"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "player": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/player"
+                  },
+                  {
+                    "$ref": "#/components/schemas/playerUpdated"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "player": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "playerUpdated": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/player"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "updated": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "requestbody": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "responses": {
+      "ranking": {
+        "description": "Get the number of players and ranking order by score",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "numberplayers": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "players": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/player"
+                      },
+                      {
+                        "$ref": "#/components/schemas/playerUpdated"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "codePlayer": {
+        "description": "Successful player creation/update",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/code"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "player": {
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/player"
+                        },
+                        {
+                          "$ref": "#/components/schemas/playerUpdated"
+                        }
+                      ],
+                      "discriminator": {
+                        "propertyName": "code",
+                        "mapping": {
+                          "201": "#/components/schemas/player",
+                          "202": "#/components/schemas/playerUpdated"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+      }
+  }
+}
