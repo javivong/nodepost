@@ -2,9 +2,9 @@ api = function (app) {
     let code100 = {code: 100, error: false, message: '2-DAMVI Server Up'};
     let code200 = {code: 200, error: false, message: 'Player Exists'};
     let code201 = {code: 201, error: false, message: 'Player Correctly Created'};
-    let code202 = {code: 201, error: false, message: 'Player Correctly Updated'};
+    let code202 = {code: 202, error: false, message: 'Player Correctly Updated'};
     let codeError502 = {
-        code: 503,
+        code: 502,
         error: true,
         message: 'The field: name, surname, score are mandatories (the score value has to be >0)'
     };
@@ -48,12 +48,12 @@ api = function (app) {
     };
 
     app.get('/', function (req, res) {
-        //code funciona ok
+        //Code working ok
         res.send(code100);
     });
 
     app.get('/ranking', function (req, res) {
-        let ranking = {namebreplayers: players.length, players: players};
+        let ranking = {numberplayers: players.length, players: players};
         res.send(ranking);
     });
 
@@ -79,13 +79,13 @@ api = function (app) {
         var paramScore = req.body.score || '';
 
         if (paramAlias === '' || paramName === '' || paramSurname === '' || parseInt(paramScore) <= 0 || paramScore === '') {
-            response = codeError502;
+            response = codeError502; //Incomplete parameters
         } else {
             //Player Search
             var index = players.findIndex(j => j.alias === paramAlias)
 
             if (index != -1) {
-                //Player allready exists
+                //Player already exists
                 response = codeError503;
             } else {
                 //Add Player
@@ -116,7 +116,7 @@ api = function (app) {
         var paramScore = req.body.score || '';
 
         if (paramalias === '' || paramname === '' || paramsurname === '' || parseInt(paramScore) <= 0 || paramScore === '') {
-            response = codeError502; //Paràmetres incomplerts
+            response = codeError502; //Incomplete parameters
         } else {
             //Player Search
             var index = players.findIndex(j => j.alias === paramalias)

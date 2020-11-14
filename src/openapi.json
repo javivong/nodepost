@@ -19,10 +19,11 @@
         },
         "basePath": {
           "enum": [
+            "",
             "v1",
             "v2"
           ],
-          "default": "v1"
+          "default": ""
         }
       }
     }
@@ -30,39 +31,89 @@
   "paths": {
     "/": {
       "get": {
-        "description": "",
+        "description": "Root page, show if the server is up",
         "parameters": [],
         "responses": {
-          "200": {
-            "description": "OK"
+          "100": {
+            "description": "2-DAMVI Server is Up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
+            }
           }
         }
       }
     },
     "/ranking": {
       "get": {
-        "description": "",
         "parameters": [],
         "responses": {
-          "200": {
-            "description": "OK"
+          "default": {
+            "$ref": "#/components/responses/ranking"
           }
         }
       }
     },
     "/players/{alias}": {
       "get": {
-        "description": "",
-        "parameters": [],
+        "description": "Get the player by the alias",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/alias"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Player exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/codePlayer"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Player not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/code"
+                }
+              }
+            }
           }
+
         }
-      }
+      },
     }
   },
   "components": {
+    "parameters": {
+      "score": {
+        "name":"score",
+        "in": "r",
+        "required": true,
+        "description": "",
+        "schema": {
+          "type": "int",
+          "format": "int32"
+        },
+        "$ref": ""
+      },
+      "alias": {
+        "name":"alias",
+        "in": "path",
+        "required": true,
+        "description": "Alias of the player that we want to acces",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
     "schemas": {
       "code": {
         "type":"object",
@@ -78,6 +129,29 @@
             "type": "string"
           }
         }
+      },
+      "codePlayer": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/code"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "player": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/player"
+                  },
+                  {
+                    "$ref": "#/components/schemas/playerUpdated"
+                  }
+                ]
+              }
+            }
+          }
+        ]
       },
       "player": {
         "type": "object",
@@ -108,7 +182,9 @@
       "playerUpdated": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/player",
+            "$ref": "#/components/schemas/player"
+          },
+          {
             "type": "object",
             "properties": {
               "updated": {
@@ -117,43 +193,76 @@
               }
             }
           }
-        ],
-        "type": "object",
-        "properties": {
-          "position": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "alias": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "surname": {
-            "type": "string"
-          },
-          "score": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "created": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
+        ]
       }
     },
     "responses": {
-      "name": {
-        "description": "",
+      "ranking": {
+        "description": "Get the number of players and ranking order by score",
         "content": {
           "application/json": {
             "schema": {
+              "type": "object",
+              "properties": {
+                "numberplayers": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "players": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/player"
+                      },
+                      {
+                        "$ref": "#/components/schemas/playerUpdated"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "codePlayer": {
+        "description": "Successful player creation/update",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/code"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "player": {
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/player"
+                        },
+                        {
+                          "$ref": "#/components/schemas/playerUpdated"
+                        }
+                      ],
+                      "discriminator": {
+                        "propertyName": "code",
+                        "mapping": {
+                          "201": "#/components/schemas/player",
+                          "202": "#/components/schemas/playerUpdated"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             }
           }
         }
       }
-    }
+      }
   }
 }
