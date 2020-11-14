@@ -6,7 +6,7 @@
     "description": "Swagger API for Players DB"
   },
   "host": "localhost:3000",
-  "basePath": "/api/v1",
+  "basePath": "/",
   "tags": [
     {
       "name": "Players",
@@ -14,7 +14,7 @@
     }
   ],
   "schemes": [
-    "https"
+    "http"
   ],
   "consumes": [
     "application/json"

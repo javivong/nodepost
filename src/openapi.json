@@ -1,0 +1,65 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Swagger API for Players DB",
+    "description": "REST Api documentation for the Node.js server",
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "localhost:{port}/{basePath}",
+      "description": "Testing local server",
+      "variables": {
+        "port": {
+          "enum": [
+            "3000",
+            "5000"
+          ],
+          "default": "3000"
+        },
+        "basePath": {
+          "enum": [
+            "v1",
+            "v2"
+          ],
+          "default": "v1"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ranking": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/players/{alias}": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}
