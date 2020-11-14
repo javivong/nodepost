@@ -88,22 +88,11 @@
           }
 
         }
-      },
+      }
     }
   },
   "components": {
     "parameters": {
-      "score": {
-        "name":"score",
-        "in": "r",
-        "required": true,
-        "description": "",
-        "schema": {
-          "type": "int",
-          "format": "int32"
-        },
-        "$ref": ""
-      },
       "alias": {
         "name":"alias",
         "in": "path",
@@ -194,6 +183,32 @@
             }
           }
         ]
+      },
+      "requestbody": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
       }
     },
     "responses": {
