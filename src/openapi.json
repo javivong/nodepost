@@ -8,7 +8,7 @@
   "servers": [
     {
       "url": "{protocol}://limitless-oasis-95018.herokuapp.com/{basePath}",
-      "description": "Testing local server",
+      "description": "Testing heroku server",
       "variables": {
         "protocol": {
           "enum": [
