@@ -10,11 +10,11 @@ const express = require("express"),
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/api/v1', router);
+app.use('/api', router);
 api.set(router);
 
 
 
 app.listen(PORT, () => {
-    console.log("El servidor está inicializado en el puerto ${PORT}");
+    console.log("El servidor está inicializado en el puerto ${ PORT }");
 });
